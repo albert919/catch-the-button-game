@@ -1,3 +1,5 @@
 # catch-the-button-game
 
-Henüz kod yok. Buton yakalama oyunu için boş depo.
+30 saniyelik refleks oyunu. Buton her tıklamada yer değiştirir, rekor tarayıcıda saklanır.
+
+Açmak için [index.html](index.html).

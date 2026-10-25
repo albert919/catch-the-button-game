@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Butonu Yakala</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e293b, #020617 70%);
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 32px;
+    }
+    h1 { margin: 0 0 8px; letter-spacing: 0.04em; }
+    p { margin: 4px 0; color: #94a3b8; }
+    .stats { display: flex; gap: 18px; margin: 14px 0 18px; font-weight: 700; }
+    .stats b { color: #38bdf8; }
+    button#start {
+      border: 0;
+      background: #38bdf8;
+      color: #082f49;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 12px 22px;
+      cursor: pointer;
+    }
+    #arena {
+      position: relative;
+      width: min(640px, 100%);
+      height: min(68vh, 520px);
+      margin-top: 16px;
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+    #prey {
+      position: absolute;
+      left: 40%;
+      top: 40%;
+      min-width: 92px;
+      height: 48px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 14px;
+      background: #f43f5e;
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Butonu Yakala</h1>
+  <p>30 saniye. Buton her tıklamada kaçar.</p>
+  <div class="stats">
+    <span>Skor <b id="score">0</b></span>
+    <span>Süre <b id="time">30</b></span>
+    <span>Rekor <b id="best">0</b></span>
+  </div>
+  <button id="start" type="button">Başla</button>
+  <div id="arena">
+    <button id="prey" type="button">Yakala</button>
+  </div>
+  <script>
+    const arena = document.getElementById("arena");
+    const prey = document.getElementById("prey");
+    const scoreEl = document.getElementById("score");
+    const timeEl = document.getElementById("time");
+    const bestEl = document.getElementById("best");
+    const startBtn = document.getElementById("start");
+    let score = 0;
+    let left = 30;
+    let timer = null;
+    let best = Number(localStorage.getItem("catch-best") || 0);
+    bestEl.textContent = String(best);
+
+    function place() {
+      const maxX = Math.max(0, arena.clientWidth - prey.offsetWidth - 8);
+      const maxY = Math.max(0, arena.clientHeight - prey.offsetHeight - 8);
+      prey.style.left = Math.floor(Math.random() * (maxX + 1)) + "px";
+      prey.style.top = Math.floor(Math.random() * (maxY + 1)) + "px";
+    }
+
+    function finish() {
+      clearInterval(timer);
+      timer = null;
+      prey.style.display = "none";
+      startBtn.disabled = false;
+      startBtn.textContent = "Tekrar";
+      if (score > best) {
+        best = score;
+        localStorage.setItem("catch-best", String(best));
+        bestEl.textContent = String(best);
+      }
+    }
+
+    startBtn.addEventListener("click", () => {
+      score = 0;
+      left = 30;
+      scoreEl.textContent = "0";
+      timeEl.textContent = "30";
+      startBtn.disabled = true;
+      prey.style.display = "block";
+      place();
+      clearInterval(timer);
+      timer = setInterval(() => {
+        left -= 1;
+        timeEl.textContent = String(left);
+        if (left <= 0) finish();
+      }, 1000);
+    });
+
+    prey.addEventListener("click", () => {
+      if (!timer) return;
+      score += 1;
+      scoreEl.textContent = String(score);
+      place();
+    });
+  </script>
+</body>
+</html>
